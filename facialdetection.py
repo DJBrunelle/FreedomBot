@@ -75,6 +75,8 @@ while True:
 
         elif (xcen - x_center) < -50:
             ser.write("l")
+        else:
+            ser.write("g")
 
     cv2.imshow('video',img)
     #~ if faceexists == False:
