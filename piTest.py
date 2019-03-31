@@ -13,20 +13,13 @@ ser = serial.Serial('/dev/ttyACM1', 9600)
 while True:
     try:
         # Reading and storing the data coming from Arduino
-        incoming_data = ser.read() 
-        
-        # Light up or light down the led depending on the incoming data
-        if incoming_data == '1':
-            GPIO.output(led_pin, 1)
-        elif incoming_data == '0':
-            GPIO.output(led_pin, 0)
-        
-        # Reading the button state
-        button_state = GPIO.input(button_pin)
-        if button_state == 1:
-            ser.write('1') # Sending data to the Arduino
-        elif button_state == 0:
-            ser.write('0')
+        #incoming_data = ser.read() 
+
+        ser.write("asd") # Sending data to the Arduino
+        #elif button_state == 0:
+            #ser.write('0')
+            
+        sleep(1)
         
     except KeyboardInterrupt:
         GPIO.cleanup()
