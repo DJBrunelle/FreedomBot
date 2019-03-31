@@ -68,30 +68,42 @@ void setup () {
   bno.setExtCrystalUse(true);
 
   //Start moving forward, with little delay and no stopping
-    forward(0.5);
+    // forward(0.5);
 }
 void loop() {
 
-  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-
-  //Check for a wall and turn if too close
-  if (checkWall() < 33) {
-    delay(10);
-    if (checkWall() < 27) {
-      stop();
-      delay(100);
-            turnRight(80);
-            forward(0.1);
+  if (Serial.available() > 0){  //Looking for incoming data
+    incoming_state = Serial.read();  //Reading the data
+    Serial.println(incoming_state);
+    if (incoming_state == 108) {
+        turnLeft(30);
+        delay(1000);
+    } else if (incoming_state == 114) {
+        turnRight(30);  
+        delay(1000);  
     }
   }
 
-  if (euler.y() > 1.3) {
-    reverse(0.2);
-    stop();
-    turnRight(80);
-    stop();
-    forward(0.1);
-  }
+  // imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+
+  // //Check for a wall and turn if too close
+  // if (checkWall() < 33) {
+  //   delay(10);
+  //   if (checkWall() < 27) {
+  //     stop();
+  //     delay(100);
+  //           turnRight(80);
+  //           forward(0.1);
+  //   }
+  // }
+
+  // if (euler.y() > 1.3) {
+  //   reverse(0.2);
+  //   stop();
+  //   turnRight(80);
+  //   stop();
+  //   forward(0.1);
+  // }
 }
 
 // Check how close an object is from front of ultrasonic sensor
