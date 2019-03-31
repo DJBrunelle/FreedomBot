@@ -1,10 +1,12 @@
+
+
 #include <Servo.h>
 #include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+//#include <Adafruit_Sensor.h>
+//#include <Adafruit_BNO055.h>
+//#include <utility/imumaths.h>
 
-Adafruit_BNO055 bno = Adafruit_BNO055(55);
+//Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 const int pingPin = A0; // Ultrasonic Trigger
 const int echoPin = A1; // Ultrasonic Receiver
@@ -44,6 +46,15 @@ void turnRight(float angleDegrees) {
   delay(timer);
   stop();
 }
+void turnLeft(float angleDegrees) {
+
+  int timer = map(angleDegrees, 0, 360, 100, 2000);
+
+  servoRight.write(ReverseTurn);
+  servoLeft.write(ForwardTurn);
+  delay(timer);
+  stop();
+}
 
 void stop() {
   servoRight.write(Stop);
@@ -57,32 +68,33 @@ void setup () {
   servoLeft.attach(11);
 
   /* Initialise the sensor */
-  if (!bno.begin())
-  {
-    /* There was a problem detecting the BNO055 ... check your connections */
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-    while (1);
-  }
-  delay(1000);
+//  if (!bno.begin())
+//  {
+//    /* There was a problem detecting the BNO055 ... check your connections */
+//    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+//    while (1);
+//  }
+//  delay(1000);
 
-  bno.setExtCrystalUse(true);
+ // bno.setExtCrystalUse(true);
 
   //Start moving forward, with little delay and no stopping
     // forward(0.5);
 }
 void loop() {
-
-  if (Serial.available() > 0){  //Looking for incoming data
+int incoming_state;
+  while (Serial.available() > 0){  //Looking for incoming data
     incoming_state = Serial.read();  //Reading the data
+  }
     Serial.println(incoming_state);
     if (incoming_state == 108) {
         turnLeft(30);
         delay(1000);
     } else if (incoming_state == 114) {
-        turnRight(30);  
+        turnRight(30);
         delay(1000);  
     }
-  }
+  
 
   // imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
 

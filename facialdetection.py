@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import RPi.GPIO as GPIO
 import time
+import serial
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11,GPIO.OUT)
 GPIO.setup(13,GPIO.OUT)
@@ -11,7 +12,7 @@ faceexists = False
 p1 = GPIO.PWM(11,50)
 p2 = GPIO.PWM(13,50)
 
-ser = serial.Serial('/dev/ttyACM1', 9600) 
+ser = serial.Serial('/dev/ttyUSB0', 9600) 
 
 width = 320
 height = 240
@@ -22,8 +23,8 @@ cap.set(4,height) # set Height
 x_center = width / 2
 y_center = height / 2
 
-p1.start(7.5)
-p2.start(10)
+#~ p1.start(7.5)
+#~ p2.start(10)
 
 def sweep():
 	try:
@@ -64,20 +65,20 @@ while True:
         faceexists = True
         xcen = x +(w/2)
         ycen = y + (h/2)
-        cv2.circle(img,(xcen,ycen),3,(255,0,0),3)
+        cv2.circle(img,(xcen,ycen),2,(255,0,0),2)
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]  
         print(xcen,ycen)
-
-        if abs(xcen - x_center) > 50:
-            ser.write("l")
-
-        elif abs(xcen - x_center) < -50:
+        print(xcen - x_center)
+        if (xcen - x_center) > 50:
             ser.write("r")
 
+        elif (xcen - x_center) < -50:
+            ser.write("l")
+
     cv2.imshow('video',img)
-    if faceexists == False:
-        sweep()
+    #~ if faceexists == False:
+        #~ sweep()
     k = cv2.waitKey(1) & 0xff
     if k == 27: # press 'ESC' to quit
         break
