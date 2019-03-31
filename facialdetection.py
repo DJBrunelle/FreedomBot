@@ -11,8 +11,16 @@ faceexists = False
 p1 = GPIO.PWM(11,50)
 p2 = GPIO.PWM(13,50)
 
-cap.set(3,320) # set Width
-cap.set(4,240) # set Height
+ser = serial.Serial('/dev/ttyACM1', 9600) 
+
+width = 320
+height = 240
+
+cap.set(3,width) # set Width
+cap.set(4,height) # set Height
+
+x_center = width / 2
+y_center = height / 2
 
 p1.start(7.5)
 p2.start(10)
@@ -59,8 +67,14 @@ while True:
         cv2.circle(img,(xcen,ycen),3,(255,0,0),3)
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]  
-
         print(xcen,ycen)
+
+        if abs(xcen - x_center) > 50:
+            ser.write("l")
+
+        elif abs(xcen - x_center) < -50:
+            ser.write("r")
+
     cv2.imshow('video',img)
     if faceexists == False:
         sweep()
