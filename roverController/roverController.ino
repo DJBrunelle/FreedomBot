@@ -1,10 +1,15 @@
-
-
 #include <Servo.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <IRremote.h>
+
+int RECV_PIN = 10;
+
+IRrecv irrecv(RECV_PIN);
+
+decode_results results;
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
@@ -70,6 +75,7 @@ void setup () {
   servoRight.attach(9);
   servoLeft.attach(11);
   stop();
+  irrecv.enableIRIn();
 
   pinMode(pinLight, OUTPUT);
 
@@ -90,6 +96,16 @@ void setup () {
   forward(0.5);
 }
 void loop() {
+
+  if (irrecv.decode(&results)) {
+    Serial.println(results.value, HEX);
+    if (results.value == 0x10EFD827) {
+      killSwitch();
+    }
+
+    irrecv.resume(); // Receive the next value
+  }
+  
   int incoming_state;
   delay(200);
   digitalWrite(pinLight, LOW);
@@ -132,6 +148,14 @@ void loop() {
 //      turnRight(80);
 //      stop();
 //    }
+  }
+}
+
+void killSwitch() {
+  stop();
+  pinMode(pinLight, LOW);
+  while(true) {
+    
   }
 }
 
