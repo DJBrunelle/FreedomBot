@@ -60,6 +60,8 @@ while True:
         minNeighbors=5,     
         minSize=(20, 20)
     )
+    if len(faces) == 0:
+        ser.write("n");
     for (x,y,w,h) in faces:
         cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
         faceexists = True
@@ -70,13 +72,17 @@ while True:
         roi_color = img[y:y+h, x:x+w]  
         print(xcen,ycen)
         print(xcen - x_center)
+        
         if (xcen - x_center) > 50:
             ser.write("r")
-
         elif (xcen - x_center) < -50:
             ser.write("l")
-        else:
+        elif (ycen) < 75:
+            ser.write("c")
+        elif (ycen > (height-100) ):
             ser.write("g")
+        else:
+            ser.write("s")
 
     cv2.imshow('video',img)
     #~ if faceexists == False:

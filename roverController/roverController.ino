@@ -12,11 +12,14 @@ const int pingPin = A0; // Ultrasonic Trigger
 const int echoPin = A1; // Ultrasonic Receiver
 
 // REFERENCE SWITCH IS ON LEFT SIDE
-#define ForwardTurn 120
+#define ForwardTurn 115
 #define Forward 105
 #define Stop 90
-#define Reverse 60
+#define Reverse 77
+#define ReverseComp 60
 #define ReverseTurn 50
+
+int pinLight = 5;
 
 Servo servoRight;
 Servo servoLeft;
@@ -32,7 +35,7 @@ void forward(float distance) {
 void reverse(float distance) {
   int timer = distance * 3250;
 
-  servoRight.write(Reverse);
+  servoRight.write(ReverseComp);
   servoLeft.write(Reverse);
   delay(timer);
 }
@@ -66,6 +69,11 @@ void setup () {
   Serial.begin(9600);
   servoRight.attach(9);
   servoLeft.attach(11);
+  stop();
+
+  pinMode(pinLight, OUTPUT);
+
+  digitalWrite(pinLight, HIGH);
 
   /* Initialise the sensor */
   if (!bno.begin())
@@ -83,41 +91,47 @@ void setup () {
 }
 void loop() {
   int incoming_state;
+  delay(200);
+  digitalWrite(pinLight, LOW);
   while (Serial.available() > 0) { //Looking for incoming data
     incoming_state = Serial.read();  //Reading the data
   }
   Serial.println(incoming_state);
   if (incoming_state == 108) {
     turnLeft(30);
-    delay(1000);
+
   } else if (incoming_state == 114) {
     turnRight(30);
-    delay(1000);
-  } else if(incoming_state == 103) {
-    forward(1);
-    stop();
-  }
 
-
-  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-
-  //Check for a wall and turn if too close
-  if (checkWall() < 33) {
-    delay(10);
-    if (checkWall() < 27) {
-      stop();
-      delay(100);
-      turnRight(80);
-      forward(0.1);
-    }
-  }
-
-  if (euler.y() > 1.3) {
-    reverse(0.2);
-    stop();
-    turnRight(80);
-    stop();
+  } else if (incoming_state == 103) {
     forward(0.1);
+
+  } else if (incoming_state == 99) {
+    reverse(0.075);
+  } else if (incoming_state == 115) {
+    digitalWrite(pinLight, HIGH);
+    stop();
+//  } else if (incoming_state == 110) {
+//    stop();
+//    stop();
+//    forward(0.1);
+//    imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
+//
+//    //Check for a wall and turn if too close
+//    if (checkWall() < 40) {
+//      delay(10);
+//      if (checkWall() < 35) {
+//        stop();
+//        turnRight(80);
+//      }
+//    }
+//
+//    if (euler.y() > 1.3) {
+//      reverse(0.2);
+//      stop();
+//      turnRight(80);
+//      stop();
+//    }
   }
 }
 
